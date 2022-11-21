@@ -2,19 +2,26 @@ const fs = require('fs');
 const csv = require('csv-parser');
 
 
-fs.createReadStream('/Users/youngminko/Desktop/recipes.csv', { encoding: 'utf8' })
+
+const readStream = fs.createReadStream('/Users/youngminko/hackreactor/full_dataset.csv', { encoding: 'utf8' })
   .on('error', (err) => {
     console.log(err);
   })
   .pipe(csv())
-  .on('data', (row) => {
+
+  const writeStream = fs.createWriteStream('/Users/youngminko/hackreactor/test4.csv');
+
+  readStream.on('data', (row)=>{
     console.log(row);
-    row.ingredients = row.ingredients.replace('{', '[').replace('}',']');
-    row.directions = rows.directions.replace('')
-    console.log('transform', row);
+    console.log(row.id);
+    if (row[''] === '19612') {
+      readStream.destroy();
+    }
+    row.ingredients = row.ingredients.replaceAll('\;', '').replaceAll('\"','').replaceAll('\\','').replaceAll(',', '\"\",\"\"').replace('[', '\"{\"\"').replace(']','\"\"}\"')
+    row.directions = row.directions.replaceAll('\;', '').replaceAll('\"','').replaceAll('\\','').replaceAll(',', '\"\",\"\"').replace('[', '\"{\"\"').replace(']','\"\"}\"')
+    row.NER = row.NER.replaceAll('\;', '').replaceAll('\"','').replaceAll('\\','').replaceAll(',', '\"\",\"\"').replace('[', '\"{\"\"').replace(']','\"\"}\"')
+    let flat = `${row['']},\"${row.title}\",${row.ingredients},${row.directions},\"${row.link}\",\"${row.source}\",${row.NER}\n`
+    console.log('transform', row.directions);
 
-  })
-  .on('end', (data) => {
-    console.log(data);
-
+    writeStream.write(flat);
   })
